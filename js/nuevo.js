@@ -23,7 +23,7 @@ const mallaCanvas = document.getElementById('mallaCanvas');
 
 //Variable de JS para cambiar el modo entre pintura y borrador
 let modoTrabajo = pintar;
-let conincidencias = 0;
+let coincidencias = 0;
 
 var matrizInicial = new Array();
 var matrizDibujada = new Array();
@@ -31,12 +31,20 @@ var matrizDibujada = new Array();
 tamañoMalla.crearMalla.onclick = function crearMalla(event){
     if(gano == true){
         matrizDibujada = [];
-        conincidencias = 0;
+        coincidencias = 0;
         init();
         gano = false;
     }
     //Iniciar arreglo
     llenarMatrizInicial();
+
+    //Llenar matriz de dibujo
+    for(let i = 0;i<8;i++){
+        for(let j= 0;j<8;j++){
+            var celdaNueva = new celda(i,j,false);
+            matrizDibujada.push(celdaNueva);
+        }
+    }
     
     //Prevenir que la página recargue cuando el usuario pulse sobre el botón submit o enviar
     event.preventDefault();
@@ -97,28 +105,44 @@ function pintarBorrarCeldas(targetCell) {
         const arregloFilas = Array.from(numeroFilas);
         const indiceFila = arregloFilas.findIndex(row => row.contains(targetCell));
         const indiceColumna = targetCell.cellIndex;
-        var celdaAux = new celda(indiceFila,indiceColumna);
         
+        var celdaAux = new celda(indiceFila,indiceColumna,false);
+        var posicionCeldaBuscada = buscarObjetoArrayIndice(celdaAux,false);
+        var celdaBuscada = matrizDibujada[posicionCeldaBuscada];
+
         targetCell.style.backgroundColor = modoTrabajo === pintar ? colorUsuario.value : 'transparent';
+        var color;
+        if(modoTrabajo === pintar){
+            color = true;
+        }
+        else{
+            color = false;
+        }
+
+        celdaBuscada.color = color;
+
+        matrizDibujada[posicionCeldaBuscada] = celdaBuscada;
 
         if(targetCell.style.backgroundColor == 'transparent'){
             eliminarObjetoMatrizDibujada(celdaAux);
         }
-        else{
+        /*else{
             if(descartarCelda(celdaAux)!=true){
                 matrizDibujada.push(celdaAux);
             }
-        }
+        }*/
                 
     } else {
         console.log("Nice try: " + targetCell.nodeName + " talk to the hand!");
     }
-    if(compararMatrices(celdaAux)){
-        gano = true;
-    }
+    
 }
 
 function mostrarMensaje(){
+    gano = false;
+    if(compararMatrices()){
+        gano = true;
+    }
     if(gano == true){
         alert("Ganaste");
     }
@@ -126,61 +150,78 @@ function mostrarMensaje(){
 
 document.getElementById("verificarMalla").addEventListener("click",mostrarMensaje);
 
+//eliminarObjetoMatrizDibujada aún en uso
 function eliminarObjetoMatrizDibujada(pCelda){
-    matrizDibujada.splice(buscarObjetoArrayIndice(pCelda),1);
-    if(eliminarCoincidencias(pCelda)){
-        conincidencias--;
-    }
+    //matrizDibujada.splice(buscarObjetoArrayIndice(pCelda),1);
+    var posicionCelda = buscarObjetoArrayIndice(pCelda,false);
+    var celdaNueva = matrizDibujada[posicionCelda];
+    celdaNueva.color = false;
+    matrizDibujada[posicionCelda] = celdaNueva;
+    /*if(eliminarCoincidencias(pCelda)){
+        coincidencias--;
+    }*/
 }
 
-function compararMatrices(pCelda){
-    if(vistaModo.textContent == " Pintar"){
-        buscarObjetoArray(pCelda);
+function compararMatrices(){
+    coincidencias = 0;
+    for(let i=0;i<64;i++){
+        var celdaDibujada = matrizDibujada[i];
+        var celdaInicial = matrizInicial[i];
+        if(celdaDibujada.columna == celdaInicial.columna && celdaDibujada.fila == celdaInicial.fila && celdaDibujada.color == celdaInicial.color){
+            coincidencias++;
+        }
     }
-    if(conincidencias == matrizInicial.length){
+
+    if(coincidencias == 64){
         return true;
     }
-    else{
-        return false;
-    }
-}
 
+}
+//buscarObjetoArray ya no esta en uso
 function buscarObjetoArray(pCelda){
     
     for(let i=0;i<matrizInicial.length;i++){
         var aux = matrizInicial[i];
-        if(aux.fila == pCelda.fila && aux.columna == pCelda.columna){
-            conincidencias++;
+        if(aux.fila == pCelda.fila && aux.columna == pCelda.columna && aux.color == pCelda.color){
+            coincidencias++;
             break;
         }
     }
 }
-
+//eliminarCoincidencias ya no esta en uso
 function eliminarCoincidencias(pCelda){
     for(let i=0;i<matrizInicial.length;i++){
         var aux = matrizInicial[i];
-        if(aux.fila == pCelda.fila && aux.columna == pCelda.columna){
+        if(aux.fila == pCelda.fila && aux.columna == pCelda.columna && aux.color == pCelda.color){
             return true;
         }
     }
 }
-
+//descartarCelda ya no esta en uso
 function descartarCelda(pCelda){
     for(let i=0;i<matrizDibujada.length;i++){
         var aux = matrizDibujada[i];
-        if(aux.fila == pCelda.fila && aux.columna == pCelda.columna){
+        if(aux.fila == pCelda.fila && aux.columna == pCelda.columna && aux.color == pCelda.color){
             return true;
         }
     }
 }
-
-function buscarObjetoArrayIndice(pCelda){
+//buscarObjetoArrayIndice aún en uso
+function buscarObjetoArrayIndice(pCelda,buscarExacto){
     
     for(let i=0;i<matrizDibujada.length;i++){
         var aux = matrizDibujada[i];
-        if(aux.fila == pCelda.fila && aux.columna == pCelda.columna){
-            return i;
+        if(buscarExacto){
+            if(aux.fila == pCelda.fila && aux.columna == pCelda.columna && aux.color == pCelda.color){
+                return i;
+            }
         }
+        else{
+            if(aux.fila == pCelda.fila && aux.columna == pCelda.columna){
+                return i;
+            }
+        }
+        
     }
 }
 
@@ -198,7 +239,13 @@ document.getElementById('limpiarMalla').addEventListener('click', function() {
         celdas[i].style.backgroundColor = 'transparent';
     }
     matrizDibujada = [];
-    conincidencias = 0;
+    for(let i = 0;i<8;i++){
+        for(let j= 0;j<8;j++){
+            var celdaNueva = new celda(i,j,false);
+            matrizDibujada.push(celdaNueva);
+        }
+    }
+    coincidencias = 0;
 });
 
 document.getElementById('modo').addEventListener('click', function(event) {
@@ -207,9 +254,10 @@ document.getElementById('modo').addEventListener('click', function(event) {
 });
 
 class celda {
-    constructor(fila, columna) {
+    constructor(fila, columna,color) {
       this.fila = fila;
       this.columna = columna;
+      this.color = color;
     }
   }
 
@@ -219,79 +267,139 @@ function llenarMatrizInicial(){
         for(let j = 0;j<8;j++){
             if(i == 0){
                 if(j >= 3 && j <= 4){
-                    cel = new celda(i,j);
+                    cel = new celda(i,j,true);
+                    matrizInicial.push(cel);
+                }
+                else{
+                    cel = new celda(i,j,false);
                     matrizInicial.push(cel);
                 }
             }
             if(i == 1){
                 if(j>=2 && j<=5){
-                    cel = new celda(i,j);
+                    cel = new celda(i,j,true);
+                    matrizInicial.push(cel);
+                }
+                else{
+                    cel = new celda(i,j,false);
                     matrizInicial.push(cel);
                 }
             }
             if(i==2){
                 if(j>=1 && j<=6){
-                    cel = new celda(i,j);
+                    cel = new celda(i,j,true);
+                    matrizInicial.push(cel);
+                }
+                else{
+                    cel = new celda(i,j,false);
                     matrizInicial.push(cel);
                 }
             }
             if(i==3){
+                if(j==2){
+                    cel = new celda(i,j,false);
+                    matrizInicial.push(cel);
+                }
+                if(j==5){
+                    cel = new celda(i,j,false);
+                    matrizInicial.push(cel);
+                }
                 if(j>=0 && j<=1){
-                    cel = new celda(i,j);
+                    cel = new celda(i,j,true);
                     matrizInicial.push(cel);
                 }
                 if(j>=3 && j<=4){
-                    cel = new celda(i,j);
+                    cel = new celda(i,j,true);
                     matrizInicial.push(cel);
                 }
                 if(j>=6 && j<=7){
-                    cel = new celda(i,j);
+                    cel = new celda(i,j,true);
                     matrizInicial.push(cel);
                 }
             }
             if(i==4){
-                cel = new celda(i,j);
+                cel = new celda(i,j,true);
                 matrizInicial.push(cel);
             }
             if(i==5){
+                if(j>=0 && j<=1){
+                    cel = new celda(i,j,false);
+                    matrizInicial.push(cel);
+                }
+                if(j>=3 && j<=4){
+                    cel = new celda(i,j,false);
+                    matrizInicial.push(cel);
+                }
+                if(j>=6 && j<=7){
+                    cel = new celda(i,j,false);
+                    matrizInicial.push(cel);
+                }
                 if(j==2){
-                    cel = new celda(i,j);
+                    cel = new celda(i,j,true);
                     matrizInicial.push(cel);
                 }
                 if(j==5){
-                    cel = new celda(i,j);
+                    cel = new celda(i,j,true);
                     matrizInicial.push(cel);
                 }
             }
             if(i==6){
+                if(j==0){
+                    cel = new celda(i,j,false);
+                    matrizInicial.push(cel);
+                }
                 if(j==1){
-                    cel = new celda(i,j);
+                    cel = new celda(i,j,true);
+                    matrizInicial.push(cel);
+                }
+                if(j==2){
+                    cel = new celda(i,j,false);
                     matrizInicial.push(cel);
                 }
                 if(j>=3 && j<=4){
-                    cel = new celda(i,j);
+                    cel = new celda(i,j,true);
+                    matrizInicial.push(cel);
+                }
+                if(j==5){
+                    cel = new celda(i,j,false);
                     matrizInicial.push(cel);
                 }
                 if(j==6){
-                    cel = new celda(i,j);
+                    cel = new celda(i,j,true);
+                    matrizInicial.push(cel);
+                }
+                if(j==7){
+                    cel = new celda(i,j,false);
                     matrizInicial.push(cel);
                 }
             }
             if(i==7){
                 if(j==0){
-                    cel = new celda(i,j);
+                    cel = new celda(i,j,true);
+                    matrizInicial.push(cel);
+                }
+                if(j==1){
+                    cel = new celda(i,j,false);
                     matrizInicial.push(cel);
                 }
                 if(j==2){
-                    cel = new celda(i,j);
+                    cel = new celda(i,j,true);
+                    matrizInicial.push(cel);
+                }
+                if(j>=3 && j<=4){
+                    cel = new celda(i,j,false);
                     matrizInicial.push(cel);
                 }
                 if(j==5){
-                    cel = new celda(i,j);
+                    cel = new celda(i,j,true);
+                    matrizInicial.push(cel);
+                }
+                if(j==6){
+                    cel = new celda(i,j,false);
                     matrizInicial.push(cel);
                 }
                 if(j==7){
-                    cel = new celda(i,j);
+                    cel = new celda(i,j,true);
                     matrizInicial.push(cel);
                 }
             }
