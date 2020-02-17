@@ -26,7 +26,7 @@
         <div class="container-fluid"><img class="img-responsive" src="img/6-triangle.png"></div>
 
             <br>
-            <a href="/ovaFinal">
+            <a href="/ovaPixelArt">
                 <button  id="inicio" class="buttonIni paint" title="Inicio" type="button">
                     <i>Inicio</i>
                 </button>
