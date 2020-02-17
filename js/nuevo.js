@@ -29,22 +29,14 @@ var matrizInicial = new Array();
 var matrizDibujada = new Array();
 
 tamañoMalla.crearMalla.onclick = function crearMalla(event){
-    if(gano == true){
-        matrizDibujada = [];
-        coincidencias = 0;
-        init();
-        gano = false;
-    }
+    document.getElementById('limpiarMalla').disabled = false;
+    
+    document.getElementById('crearMalla').disabled = true;
+    
     //Iniciar arreglo
     llenarMatrizInicial();
 
-    //Llenar matriz de dibujo
-    for(let i = 0;i<8;i++){
-        for(let j= 0;j<8;j++){
-            var celdaNueva = new celda(i,j,false);
-            matrizDibujada.push(celdaNueva);
-        }
-    }
+    
     
     //Prevenir que la página recargue cuando el usuario pulse sobre el botón submit o enviar
     event.preventDefault();
@@ -95,7 +87,19 @@ tamañoMalla.crearMalla.onclick = function crearMalla(event){
         event.preventDefault();
         if (mouseIsDown) {pintarBorrarCeldas(event.target);}
     }); // end continuous paint and erase
-    
+    if(gano == true){
+        matrizDibujada = [];
+        coincidencias = 0;
+        init();
+        gano = false;
+    }
+    //Llenar matriz de dibujo
+    for(let i = 0;i<8;i++){
+        for(let j= 0;j<8;j++){
+            var celdaNueva = new celda(i,j,false);
+            matrizDibujada.push(celdaNueva);
+        }
+    }
 
 }
 
@@ -142,6 +146,8 @@ function mostrarMensaje(){
     gano = false;
     if(compararMatrices()){
         gano = true;
+        document.getElementById('limpiarMalla').disabled = true;
+        //document.getElementById('crearMalla').disabled = false;
     }
     if(gano == true){
         alert("Ganaste");
@@ -235,17 +241,18 @@ colorUsuario.oninput = function (){
 document.getElementById('limpiarMalla').addEventListener('click', function() {
     mallaCanvas.classList.toggle('rotateCanvas'); // rotate the Design Canvas div
     let celdas = malla.getElementsByTagName('td');
-    for(let i = 0; i <= celdas.length; i++) {
+    for(let i = 0; i < celdas.length; i++) {
         celdas[i].style.backgroundColor = 'transparent';
     }
     matrizDibujada = [];
-    for(let i = 0;i<8;i++){
+    for(let k = 0;k<8;k++){
         for(let j= 0;j<8;j++){
-            var celdaNueva = new celda(i,j,false);
+            var celdaNueva = new celda(k,j,false);
             matrizDibujada.push(celdaNueva);
         }
     }
     coincidencias = 0;
+    
 });
 
 document.getElementById('modo').addEventListener('click', function(event) {
@@ -263,6 +270,7 @@ class celda {
 
 
 function llenarMatrizInicial(){
+    matrizInicial = [];
     for (let i = 0;i<8;i++){
         for(let j = 0;j<8;j++){
             if(i == 0){

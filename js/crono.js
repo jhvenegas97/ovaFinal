@@ -31,14 +31,15 @@ function escribir(){
 function parar(){
     if(gano==true){
         clearInterval(id);
+        
         //document.querySelector(".start").addEventListener("click",cronometrar);
     }
     
 }
-/*
+
 function reiniciar(){
     clearInterval(id);
     document.getElementById("hms").innerHTML="00:00:00";
     h=0;m=0;s=0;
     document.querySelector(".start").addEventListener("click",cronometrar);
-}*/
+}
