@@ -57,7 +57,7 @@
                     <input class="buttonIni paint  btn-danger" type="submit" id="crearMalla" value="Empezar" name="enviarMalla" title="Crea la cuadricula.">
                 <input class="buttonIni paint  btn-info " type="button" id="limpiarMalla" value="Limpiar" title="Borra los colores de la cuadriculara  para que puedas empezar otra vez.">
                 <input class="buttonIni paint  btn-success " type="button" id="verificarMalla" value="Verificar" title="Verifica si el Pixel Art esta correcto.">
-                <a href="/ovaFinal">
+                <a href="/ovaPixelArt">
                 <button  id="inicio" class="buttonIni paint" title="Inicio" type="button">
                     <i>Inicio</i>
                 </button>
